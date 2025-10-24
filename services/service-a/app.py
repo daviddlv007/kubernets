@@ -15,7 +15,7 @@ SERVICE_B_URL = os.getenv('SERVICE_B_URL', 'http://localhost:8082')
 @app.route('/health')
 def health():
     """Health check endpoint"""
-    return jsonify({"status": "healthy", "service": "service-a"}), 200
+    return jsonify({"status": "healthy", "service": "service-a", "version": "v1.1-gitops"}), 200
 
 @app.route('/call')
 def call_service_b():
