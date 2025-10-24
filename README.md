@@ -1,12 +1,15 @@
-# 🚀 Multi-Cloud Kubernetes - Proyecto Minimalista
+# 🚀 Multi-Cloud Kubernetes + GitOps Automático
 
-> Orquestación multi-cluster con K3s + ArgoCD | Local → Cloud sin cambios
+> Despliegue multi-cloud con K3s + GitOps | Local → Nube con CI/CD automático
 
 ## 📋 ¿Qué es este proyecto?
 
-Simulación local de arquitectura multi-cloud con Kubernetes que se replica **idénticamente** en nubes reales.
+Sistema de microservicios multi-cloud con **despliegue automático desde GitHub**.
 
-**2 microservicios** en **2 clusters** diferentes, orquestados con **ArgoCD** (GitOps).
+- **2+ microservicios** en **múltiples clusters** (local o VMs reales)
+- **GitOps automático** - Un `git push` despliega en todas las VMs
+- **CI/CD minimalista** - 100 líneas de bash, cero configuración compleja
+- **GHCR** para imágenes públicas
 
 ```
 ┌─────────────────┐         ┌─────────────────┐
@@ -30,7 +33,7 @@ Simulación local de arquitectura multi-cloud con Kubernetes que se replica **id
 
 ---
 
-## ⚡ Quick Start (5 minutos)
+## ⚡ Quick Start Local (5 minutos)
 
 ```bash
 # 1. Prerequisitos
@@ -39,31 +42,54 @@ make check-deps
 # 2. Crear clusters locales
 make create-clusters
 
-# 3. Instalar ArgoCD
-make install-argocd
+# 3. Setup GitOps automático
+./scripts/setup-gitops.sh
 
-# 4. Desplegar servicios
-make deploy-services
+# 4. ¡Listo! Ahora cada git push despliega automáticamente
 
-# 5. Probar comunicación
-make test
+# Ver logs del GitOps
+sudo journalctl -u gitops -f
+```
 
-# 6. Ver ArgoCD Dashboard
-make argocd-ui
+## 🌐 Despliegue en VMs (Multi-Cloud Real)
+
+```bash
+# En cada VM (AWS, GCP, Azure, DigitalOcean, etc.)
+ssh user@vm-ip
+
+# 1. Instalar K3s
+curl -sfL https://get.k3s.io | sh -
+
+# 2. Clonar repo
+git clone https://github.com/daviddlv007/kubernets.git
+cd kubernets
+
+# 3. Setup GitOps (especificar VM: vm1, vm2, vm3, vm4)
+./scripts/setup-vm-gitops.sh vm1
+
+# ¡Listo! Ahora cada git push despliega en todas las VMs automáticamente
+
+# Ver documentación completa
+cat docs/VM_DEPLOYMENT.md
 ```
 
 ---
 
 ## 🛠️ Prerequisitos
 
-- **Docker** (para K3d)
-- **kubectl** (CLI de Kubernetes)
-- **k3d** (K3s in Docker)
-- **Git** (para GitOps)
+**Local:**
+- Docker (para k3d)
+- kubectl
+- k3d
 
-**Instalación automática:**
+**VMs en la nube:**
+- Ubuntu/Debian
+- 2GB RAM mínimo
+- Puertos 6443, 80, 443 abiertos
+
+**Instalación automática local:**
 ```bash
-make install-tools  # Instala todo lo necesario
+./scripts/install-tools.sh
 ```
 
 ---
@@ -74,28 +100,36 @@ make install-tools  # Instala todo lo necesario
 - **Endpoint**: `GET /call` 
 - **Función**: Llama a Service B y retorna la respuesta
 - **Puerto**: 8080
+- **Imagen**: `ghcr.io/daviddlv007/service-a:latest`
 
 ### Service B (Node.js/Express)
 - **Endpoint**: `GET /hello`
 - **Función**: Responde con mensaje
 - **Puerto**: 8080
+- **Imagen**: `ghcr.io/daviddlv007/service-b:latest`
 
-### ArgoCD
-- **Dashboard**: http://localhost:8080 (user: admin)
-- **Función**: Orquesta despliegues en ambos clusters desde Git
+### GitOps Automático
+- **Sincronización**: Cada 30 segundos desde GitHub
+- **Logs**: `sudo journalctl -u gitops -f`
+- **Función**: Despliegue automático multi-cluster/multi-cloud
 
 ---
 
 ## 🎯 Comandos Útiles
 
 ```bash
-# Gestión de Clusters
-make create-clusters       # Crear ambos clusters
-make delete-clusters       # Eliminar todo
-make list-clusters         # Ver clusters activos
+# Gestión Local
+make create-clusters       # Crear clusters k3d
+./scripts/setup-gitops.sh  # Configurar GitOps automático
+sudo journalctl -u gitops -f  # Ver logs de despliegues
 
-# ArgoCD
-make install-argocd        # Instalar ArgoCD
+# Desarrollo
+./scripts/build-and-push.sh   # Build y push a GHCR
+git add . && git commit -m "Update" && git push  # Desplegar automáticamente
+
+# VMs
+./scripts/setup-vm-gitops.sh vm1  # Setup en VM específica
+ssh user@vm1 "sudo journalctl -u gitops -f"  # Ver logs remotos
 make argocd-ui             # Abrir dashboard
 make argocd-password       # Ver password admin
 
