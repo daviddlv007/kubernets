@@ -1,0 +1,36 @@
+# Ejemplo de ArgoCD Application para Service B en Cluster 2
+# Requiere haber agregado cluster2 a ArgoCD con: argocd cluster add k3d-cluster2
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-b
+  namespace: argocd
+spec:
+  project: default
+  
+  # Fuente: Tu repositorio Git
+  source:
+    repoURL: https://github.com/YOUR_USERNAME/kubernets.git
+    targetRevision: main
+    path: services/service-b/k8s
+  
+  # Destino: Cluster 2 (debes agregar el cluster primero)
+  destination:
+    name: k3d-cluster2  # Nombre del cluster en ArgoCD
+    namespace: default
+  
+  # Sincronización automática
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+# Para agregar cluster2 a ArgoCD:
+# 1. kubectl config use-context k3d-cluster1
+# 2. kubectl config get-contexts  # Obtener nombre de cluster2
+# 3. argocd login localhost:8080
+# 4. argocd cluster add k3d-cluster2 --name k3d-cluster2

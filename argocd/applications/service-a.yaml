@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-a
+  namespace: argocd
+spec:
+  project: default
+  
+  # Configuración del repositorio Git
+  source:
+    repoURL: https://github.com/daviddlv007/kubernets.git
+    targetRevision: main
+    path: services/service-a/k8s
+  
+  # Destino: Cluster 1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  # Sincronización automática
+  syncPolicy:
+    automated:
+      prune: true        # Elimina recursos huérfanos
+      selfHeal: true     # Auto-repara si hay drift
+    syncOptions:
+      - CreateNamespace=true

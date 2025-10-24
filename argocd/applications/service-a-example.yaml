@@ -1,0 +1,36 @@
+# Ejemplo de ArgoCD Application para Service A
+# Descomenta y ajusta cuando tengas un repositorio Git remoto
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-a
+  namespace: argocd
+spec:
+  project: default
+  
+  # Fuente: Tu repositorio Git
+  source:
+    repoURL: https://github.com/YOUR_USERNAME/kubernets.git
+    targetRevision: main
+    path: services/service-a/k8s
+  
+  # Destino: Cluster 1
+  destination:
+    server: https://kubernetes.default.svc  # Cluster local
+    namespace: default
+  
+  # Sincronización automática
+  syncPolicy:
+    automated:
+      prune: true      # Eliminar recursos que no están en Git
+      selfHeal: true   # Auto-reparar si hay drift
+    syncOptions:
+      - CreateNamespace=true
+  
+  # Health check personalizado
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas  # Ignora cambios en replicas (HPA)
