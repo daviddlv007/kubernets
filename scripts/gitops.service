@@ -1,0 +1,15 @@
+[Unit]
+Description=GitOps Automático - Sincronización desde GitHub
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/proyectos/kubernets
+ExecStart=/home/ubuntu/proyectos/kubernets/scripts/gitops.sh
+Restart=always
+RestartSec=10
+Environment="KUBECONFIG=/home/ubuntu/.kube/config"
+
+[Install]
+WantedBy=multi-user.target
