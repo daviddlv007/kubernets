@@ -1,0 +1,52 @@
+# Archivos temporales
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+
+# Docker
+.dockerignore
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+.kube/
+
+# Secrets (nunca commitear)
+*secret*.yaml
+*.key
+*.pem
+*.crt
+scripts/deploy-all-vms.sh
+
+# Build outputs
+dist/
+build/
+*.tar.gz
+*.zip
