@@ -1,5 +1,4 @@
 RESUMEN FINAL
-Lo que hemos logrado:
 
 Estructura limpia de Kubernetes:
 
